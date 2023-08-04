@@ -29,24 +29,25 @@ function getTotalNumberOfBorrows(account, books) {
   //When the array of borrowed books has been created, the function simply returns the length of the array
 }
 
+function _getAuthor(book, authors) {
+  const author = authors.find((author) => author.id === book.authorId);
+  return author;
+}
 
 function getBooksPossessedByAccount(account, books, authors) {
-  // Initialize a return array.
-  const booksPossessed = [];
-  // Check for the account id in the borrows arrays.
+  const borrowedBooks = [];
   books.forEach((book) => {
-    const borrowArray = book.borrows;
-    if (borrowArray.find((borrow) => borrow.id === account.id && borrow.returned === false)) {
-      booksPossessed.push(book);
-    }
+    let bookBorrows = book.borrows;
+    bookBorrows.forEach((borrow) => {
+      if (borrow.id === account.id && !borrow.returned) {
+        borrowedBooks.push(book);
+      }
+    });
   });
-  // Iterate over the booksPossessed array and add the author information to each book object.
-  booksPossessed.forEach((book) => {
-    const author = authors.find((person) => person.id === book.authorId);
-    book['author'] = author;
+  let result = borrowedBooks.map((book) => {
+    return { ...book, author: _getAuthor(book, authors) };
   });
-  // Return the booksPossessed array.
-  return booksPossessed;
+  return result;
 }
 
 
